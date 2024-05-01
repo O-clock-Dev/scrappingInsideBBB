@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "sourceMap": true,
+        "outDir": "dist",
+        "target": "ESNext",
+        //"noEmitOnError": true,
+        "strict": true,
+        "module": "CommonJS",
+        "lib": ["ESNext", "DOM"],
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+    },
+    "files": [
+        "src/inside.ts"
+    ]
+}
