@@ -6,6 +6,12 @@ Compilation du projet
 npx tsc --watch
 ```
 
+Execution de la migration
+
+```sh
+node dist/scripts/migrator.js
+```
+
 Execution du script
 
 ```sh

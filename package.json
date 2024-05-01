@@ -2,9 +2,14 @@
 	"type": "commonjs",
 	"dependencies": {
 		"dotenv": "^16.4.5",
+		"fs": "0.0.1-security",
 		"kysely": "^0.27.3",
 		"mysql2": "^3.9.7",
+		"path": "^0.12.7",
 		"puppeteer": "^22.7.1",
 		"typescript": "^5.4.5"
+	},
+	"devDependencies": {
+		"@types/node": "^20.12.8"
 	}
 }
