@@ -6,10 +6,9 @@ export class StudentRepository {
   constructor(private db: Kysely<Database>) {}
 
   async create(student: NewStudent) {
-    const result = await this.db.insertInto('student')
+    await this.db.insertInto('student')
       .values(student)
       .executeTakeFirstOrThrow()
-    return result
   }
 }
 

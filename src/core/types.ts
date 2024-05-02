@@ -8,14 +8,30 @@ import {
 } from "kysely";
 
 export interface Database {
+  cohort: CohortTable;
   student: StudentTable;
 }
 
+export interface CohortTable {
+  id: Generated<string>;
+  name: string | null;
+  start_date: ColumnType<Date, string | undefined, never>;
+  end_date: ColumnType<Date, string | undefined, never>;
+  email: string | null;
+  created_at: ColumnType<Date, string | undefined, never>;
+}
+
+export type Cohort = Selectable<CohortTable>;
+export type NewCohort = Insertable<CohortTable>;
+export type UpdateCohort = Updateable<CohortTable>;
+
 export interface StudentTable {
   id: Generated<string>;
-  first_name: string | null;
-  last_name: string | null;
+  name: string | null;
+  github: string | null;
   email: string | null;
+  exit: boolean;
+  cohort_id: string;
   created_at: ColumnType<Date, string | undefined, never>;
 }
 

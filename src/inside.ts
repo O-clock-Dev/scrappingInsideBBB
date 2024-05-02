@@ -1,5 +1,9 @@
 import puppeteer from "puppeteer";
 import { configDotenv } from "dotenv";
+import UseCase from "./scripts/use_case.js";
+import { CohortRepository } from "./repositories/CohortRepository.js";
+import { StudentRepository } from "./repositories/StudentRepository.js";
+import { db } from "./core/database.js";
 
 const envVars = configDotenv().parsed;
 if (!envVars) {
@@ -64,12 +68,30 @@ function delay(time: number): Promise<void> {
       const cohortDetailsLink = cohort
         .querySelector(".ag-cell:nth-child(10) > div > div > a")
         ?.attributes.getNamedItem("href")?.value;
-      return { cohortName, cohortStartDate, cohortEndDate, cohortDetailsLink };
+      return {
+        cohortName,
+        cohortStartDate,
+        cohortEndDate,
+        cohortDetailsLink,
+        cohortId: "",
+      };
     });
   });
 
+  const useCase = new UseCase(
+    new CohortRepository(db),
+    new StudentRepository(db)
+  );
+
   // Click on third cohort
-  await page.goto(`${cohorts[3].cohortDetailsLink}`);
+  await page.goto(`${cohorts[13].cohortDetailsLink}`);
+  const cohortId: string = await useCase.createCohort(
+    cohorts[13].cohortName ?? "",
+    cohorts[13].cohortStartDate ?? "",
+    cohorts[13].cohortEndDate ?? ""
+  );
+
+  console.log(cohorts[29]);
 
   await page.waitForSelector(".ag-center-cols-container");
 
@@ -93,6 +115,18 @@ function delay(time: number): Promise<void> {
   });
 
   console.log(students);
+
+  for (const student of students) {
+    await useCase.createStudent(
+      cohortId,
+      student.studentName ?? "",
+      student.studentGithub ?? "",
+      "",
+      student.studentExit
+    );
+  }
+
+  await db.destroy();
 
   await browser.close();
 })();
