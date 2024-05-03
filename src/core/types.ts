@@ -27,7 +27,9 @@ export type UpdateCohort = Updateable<CohortTable>;
 
 export interface StudentTable {
   id: Generated<string>;
-  name: string | null;
+  fullName: string | null;
+  lastName: string | null;
+  firstName: string | null;
   github: string | null;
   email: string | null;
   exit: boolean;

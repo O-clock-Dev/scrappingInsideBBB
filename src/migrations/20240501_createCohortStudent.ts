@@ -17,7 +17,9 @@ export async function up(db: Kysely<any>): Promise<void> {
     .createTable("student")
     // add column id with type string (uuid) and set it as primary key
     .addColumn("id", "varchar(64)", (col) => col.primaryKey())
-    .addColumn("name", "varchar(255)")
+    .addColumn("fullName", "varchar(255)")
+    .addColumn("lastName", "varchar(255)")
+    .addColumn("firstName", "varchar(255)")
     .addColumn("github", "varchar(255)")
     .addColumn("email", "varchar(255)")
     .addColumn("exit", "boolean", (col) => col.defaultTo(false))

@@ -27,6 +27,17 @@ export default class UseCase {
     return this.dateToMysqlFormat(new Date(`${year}-${monthWithZero}-${dayWithZero}`))
   }
 
+  splitFullName(fullName: string): { firstName: string, lastName: string } | undefined {
+    const regexLastName = /^[A-Z0-9ÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ._-\s]+ /gm
+    // split fullName into first and last name
+    const lastName = regexLastName.exec(fullName)
+    if(lastName?.length) {
+      return { firstName: fullName.replace(lastName[0], "").trim(), lastName: lastName[0]}
+    } else {
+      console.error(`[ERROR] - Full name : ${fullName} - Last name not found`)
+    }
+  }
+
   async createCohort(name: string, start_date: string, end_date: string): Promise<string> {
     const cohortId = crypto.randomBytes(16).toString("hex")
     const defaultDate = this.dateToMysqlFormat(new Date('1970-01-01'))
@@ -41,12 +52,23 @@ export default class UseCase {
     return cohortId
   }
 
-  async createStudent(cohortId: string, name: string, github: string, email: string, exit: boolean): Promise<void> {
+  async createStudent(cohortId: string, fullName: string, github: string, email: string, exit: boolean): Promise<void> {
     const studentId = crypto.randomBytes(16).toString("hex")
+    let firstName = '';
+    let lastName = '';
+    const dataFullName = this.splitFullName(fullName)
+
+    if(dataFullName){
+      firstName = dataFullName.firstName
+      lastName = dataFullName.lastName
+    }
+
     const student = await this.studentRepository.create(
       {
         id: studentId,
-        name: name,
+        fullName: fullName,
+        lastName: lastName,
+        firstName: firstName,
         github: github,
         email: email,
         exit: exit,
@@ -55,13 +77,3 @@ export default class UseCase {
     )
   }
 }
-
-// const exec = async () => {
-//   const useCase = new UseCase(new CohortRepository(db), new StudentRepository(db))
-//   const cohortId: string = await useCase.createCohort()
-//   await useCase.createStudent(cohortId)
-//   db.destroy()
-//   console.log("Student creation started")
-// }
-
-// exec()
