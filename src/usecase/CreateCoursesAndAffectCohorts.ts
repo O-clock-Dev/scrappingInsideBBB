@@ -12,7 +12,7 @@ interface Course {
   endDate: string,
 }
 
-export default class CreateCohortsAndStudentsUseCase {
+export default class CreateCourseAndAffectCohort {
   private cohortRepository: CohortRepository
 
   constructor(cohortRepository: CohortRepository) {
@@ -20,7 +20,15 @@ export default class CreateCohortsAndStudentsUseCase {
   }
 
   async createCourseAndAffectCohort(course: Course): Promise<void> {
-    const cohort = await this.cohortRepository
-
+    const courseSlug = course.name.toLowerCase().replace(/ /g, " ")
+    const courseWords = courseSlug.split(" ");
+    for(const word of courseWords) {
+      const cohort = await this.cohortRepository.findLikeSlug(word)
+      if(cohort) {
+        console.log(`course slug : ${courseSlug}`)
+        console.log(`cohort found : ${cohort.name}`)
+        break
+      }
+    }
   }
 }

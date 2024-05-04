@@ -17,24 +17,32 @@ export class CohortRepository {
       .execute()
   }
 
-  async update(id: string, cohort: NewCohort) {
+  async update(id: string, cohort: NewCohort): Promise<void> {
     await this.db.updateTable('cohort')
       .set(cohort)
       .where('id', '=', id)
       .execute()
   }
 
-  async updateSlug(id: string, slug: string) {
+  async updateSlug(id: string, slug: string): Promise<void> {
     await this.db.updateTable('cohort')
       .set({ slug })
       .where('id', '=', id)
       .execute()
   }
 
-  async findLikeName(name: string) {
+  async findLikeName(name: string): Promise<Cohort | undefined> {
     return await this.db.selectFrom('cohort')
       .where('name', 'like', `%${name}%`)
-      .execute()
+      .selectAll()
+      .executeTakeFirst()
+  }
+
+  async findLikeSlug(slug: string): Promise<Cohort | undefined> {
+    return await this.db.selectFrom('cohort')
+      .where('slug', 'like', `%${slug}%`)
+      .selectAll()
+      .executeTakeFirst()
   }
 }
 

@@ -2,6 +2,7 @@ import { StudentRepository } from "../repositories/StudentRepository.js"
 import { CohortRepository } from "../repositories/CohortRepository.js"
 import crypto from "crypto"
 import { db } from "../core/database.js"
+import slugify from "slugify"
 
 export default class CreateCohortsAndStudentsUseCase {
   private studentRepository: StudentRepository
@@ -45,6 +46,7 @@ export default class CreateCohortsAndStudentsUseCase {
       {
         id: cohortId,
         name: name,
+        slug: slugify(name, { lower: true }),
         start_date: start_date !== "" ? this.dateFromInsideFormatToMysqlFormat(start_date) : defaultDate,
         end_date: end_date !== "" ?  this.dateFromInsideFormatToMysqlFormat(end_date) : defaultDate,
       }
@@ -69,6 +71,7 @@ export default class CreateCohortsAndStudentsUseCase {
         fullName: fullName,
         lastName: lastName,
         firstName: firstName,
+        slug: slugify(fullName, { lower: true }),
         github: github,
         email: email,
         exit: exit,
