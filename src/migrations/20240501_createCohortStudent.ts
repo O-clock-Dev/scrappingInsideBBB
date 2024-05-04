@@ -6,6 +6,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .createTable('cohort')
     .addColumn('id', "varchar(64)", (col) => col.primaryKey())
     .addColumn('name', 'varchar(255)')
+    .addColumn("slug", "varchar(255)")
     .addColumn("start_date", "timestamp")
     .addColumn("end_date", "timestamp")
     .addColumn("created_at", "timestamp", (col) =>
@@ -20,6 +21,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("fullName", "varchar(255)")
     .addColumn("lastName", "varchar(255)")
     .addColumn("firstName", "varchar(255)")
+    .addColumn("slug", "varchar(255)")
     .addColumn("github", "varchar(255)")
     .addColumn("email", "varchar(255)")
     .addColumn("exit", "boolean", (col) => col.defaultTo(false))

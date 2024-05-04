@@ -10,5 +10,18 @@ export class StudentRepository {
       .values(student)
       .executeTakeFirstOrThrow()
   }
+
+  async updateSlug(id: string, slug: string) {
+    await this.db.updateTable('student')
+      .set({ slug })
+      .where('id', '=', id)
+      .execute()
+  }
+
+  async findAll() {
+    return await this.db.selectFrom('student')
+      .selectAll()
+      .execute()
+  }
 }
 

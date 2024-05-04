@@ -15,6 +15,7 @@ export interface Database {
 export interface CohortTable {
   id: Generated<string>;
   name: string | null;
+  slug: string | null;
   start_date: ColumnType<Date, string | undefined, never>;
   end_date: ColumnType<Date, string | undefined, never>;
   email: string | null;
@@ -30,6 +31,7 @@ export interface StudentTable {
   fullName: string | null;
   lastName: string | null;
   firstName: string | null;
+  slug: string | null;
   github: string | null;
   email: string | null;
   exit: boolean;
