@@ -1,15 +1,20 @@
 import puppeteer from "puppeteer"
 import { configDotenv } from "dotenv"
 import CreateCourseAndAffectCohort from "./usecase/CreateCoursesAndAffectCohorts"
-import { CohortRepository } from "./repositories/CohortRepository.js"
-import { db } from "./core/database.js"
+import { CohortRepository } from "./repositories/CohortRepository"
+import { CourseRepository } from "./repositories/CourseRepository"
+import CreateCourseMessages from "./usecase/CreateCourseMessages"
+import { StudentRepository } from "./repositories/StudentRepository"
+import { MessageRepository } from "./repositories/MessageRepository"
+import { db } from "./core/database"
 
 const envVars = configDotenv().parsed
 if (!envVars) {
   throw new Error("No environment variables found")
 }
 
-const baseUrl = envVars.DASHBOARD_BBB_BASE_URL
+const baseUrl = envVars.BBB_BASE_URL
+const dashBoardBaseUrl = envVars.DASHBOARD_BBB_BASE_URL
 const login = envVars.KEYCLOAK_LOGIN
 const password = envVars.KEYCLOAK_PASSWORD
 
@@ -28,7 +33,7 @@ function delay(time: number): Promise<void> {
   const page = await browser.newPage()
 
   // Navigate the page to a URL
-  await page.goto(baseUrl)
+  await page.goto(dashBoardBaseUrl)
 
   // Set screen size
   await page.setViewport({ width: 1080, height: 1024 })
@@ -55,13 +60,25 @@ function delay(time: number): Promise<void> {
   await page.waitForNavigation()
 
   try {
-    const response = await page.goto(`${baseUrl}api/generate-courses-list`, {waitUntil: "domcontentloaded"});
+    const response = await page.goto(`${dashBoardBaseUrl}api/generate-courses-list`, {waitUntil: "domcontentloaded"});
     if(response?.ok()) {
       const courses = await response.json()
-      console.log(courses);
+      console.log(courses)
       for(const course of courses) {
-        const useCase = new CreateCourseAndAffectCohort(new CohortRepository(db))
-        await useCase.createCourseAndAffectCohort(course);
+        const useCase = new CreateCourseAndAffectCohort(new CohortRepository(db), new CourseRepository(db))
+        const cohortSlug = await useCase.createCourseAndAffectCohort(course)
+
+        // get messages
+        if(cohortSlug) {
+          const courseUrl = `${baseUrl}presentation/${course.id}/slides_new.xml`
+          console.log(courseUrl)
+          const responseXml = await page.goto(courseUrl, {waitUntil: "domcontentloaded"})
+          if(responseXml?.ok()) {
+            const messages = await responseXml.text()
+            const messagesUseCase = new CreateCourseMessages(new StudentRepository(db), new CohortRepository(db), new CourseRepository(db), new MessageRepository(db))
+            await messagesUseCase.createCourseMessages(course.id, course.creationDate, cohortSlug, messages)
+          }
+        }
       }
     }
   } catch (error) {

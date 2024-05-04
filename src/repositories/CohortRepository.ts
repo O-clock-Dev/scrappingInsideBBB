@@ -38,6 +38,13 @@ export class CohortRepository {
       .executeTakeFirst()
   }
 
+  async findBySlug(slug: string): Promise<Cohort | undefined> {
+    return await this.db.selectFrom('cohort')
+      .where('slug', '=', slug)
+      .selectAll()
+      .executeTakeFirst()
+  }
+
   async findLikeSlug(slug: string): Promise<Cohort | undefined> {
     return await this.db.selectFrom('cohort')
       .where('slug', 'like', `%${slug}%`)

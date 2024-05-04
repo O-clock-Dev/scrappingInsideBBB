@@ -1,7 +1,7 @@
-import { StudentRepository } from "../repositories/StudentRepository.js"
-import { CohortRepository } from "../repositories/CohortRepository.js"
+import { StudentRepository } from "../repositories/StudentRepository"
+import { CohortRepository } from "../repositories/CohortRepository"
 import crypto from "crypto"
-import { db } from "../core/database.js"
+import { db } from "../core/database"
 import slugify from "slugify"
 
 export default class CreateCohortsAndStudentsUseCase {

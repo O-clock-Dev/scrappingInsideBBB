@@ -2,6 +2,7 @@
 	"type": "commonjs",
 	"dependencies": {
 		"dotenv": "^16.4.5",
+		"fast-xml-parser": "^4.3.6",
 		"fs": "0.0.1-security",
 		"kysely": "^0.27.3",
 		"mysql2": "^3.9.7",
