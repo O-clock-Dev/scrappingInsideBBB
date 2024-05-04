@@ -1,9 +1,5 @@
 import puppeteer from "puppeteer";
 import { configDotenv } from "dotenv";
-import UseCase from "./scripts/use_case.js";
-import { CohortRepository } from "./repositories/CohortRepository.js";
-import { StudentRepository } from "./repositories/StudentRepository.js";
-import { db } from "./core/database.js";
 
 const envVars = configDotenv().parsed;
 if (!envVars) {

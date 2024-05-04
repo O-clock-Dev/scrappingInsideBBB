@@ -1,9 +1,9 @@
 import puppeteer from "puppeteer";
 import { configDotenv } from "dotenv";
-import UseCase from "./scripts/use_case.js";
-import { CohortRepository } from "./repositories/CohortRepository.js";
-import { StudentRepository } from "./repositories/StudentRepository.js";
-import { db } from "./core/database.js";
+import CreateCohortsAndStudentsUseCase from "./usecase/CreateCohortsAndStudentsUseCase";
+import { CohortRepository } from "./repositories/CohortRepository";
+import { StudentRepository } from "./repositories/StudentRepository";
+import { db } from "./core/database";
 
 const envVars = configDotenv().parsed;
 if (!envVars) {
@@ -55,6 +55,7 @@ function delay(time: number): Promise<void> {
     const cohorts = document.querySelectorAll(
       ".ag-center-cols-container .ag-row"
     );
+
     return Array.from(cohorts).map((cohort) => {
       const cohortName = cohort.querySelector(
         ".ag-cell:nth-child(2) > div > div"
@@ -65,6 +66,9 @@ function delay(time: number): Promise<void> {
       const cohortEndDate = cohort.querySelector(
         ".ag-cell:nth-child(4) > div > div"
       )?.textContent;
+      const nbStudents = parseInt(cohort.querySelector(
+        ".ag-cell:nth-child(6) > div > div"
+      )?.textContent as string);
       const cohortDetailsLink = cohort
         .querySelector(".ag-cell:nth-child(10) > div > div > a")
         ?.attributes.getNamedItem("href")?.value;
@@ -72,61 +76,71 @@ function delay(time: number): Promise<void> {
         cohortName,
         cohortStartDate,
         cohortEndDate,
+        nbStudents,
         cohortDetailsLink,
         cohortId: "",
       };
     });
   });
 
-  const useCase = new UseCase(
+  const useCase = new CreateCohortsAndStudentsUseCase(
     new CohortRepository(db),
     new StudentRepository(db)
   );
 
-  // Click on third cohort
-  await page.goto(`${cohorts[13].cohortDetailsLink}`);
-  const cohortId: string = await useCase.createCohort(
-    cohorts[13].cohortName ?? "",
-    cohorts[13].cohortStartDate ?? "",
-    cohorts[13].cohortEndDate ?? ""
-  );
+  //const tmpCohorts = cohorts.filter((cohort) => cohort.cohortName?.includes('NOCODE'));
+  //const cohort = tmpCohorts[0];
 
-  console.log(cohorts[29]);
 
-  await page.waitForSelector(".ag-center-cols-container");
+  for(const cohort of cohorts) {
+    console.log(`nombre d'étudiants : ${cohort.nbStudents}`)
+    if(cohort.nbStudents > 0) {
+      // Click on third cohort
+      await page.goto(`${cohort.cohortDetailsLink}`, {waitUntil: "domcontentloaded"});
+      const cohortId: string = await useCase.createCohort(
+        cohort.cohortName ?? "",
+        cohort.cohortStartDate ?? "",
+        cohort.cohortEndDate ?? ""
+      );
 
-  // Get all students
-  const students = await page.evaluate(() => {
-    const students = document.querySelectorAll(
-      ".ag-center-cols-container .ag-row"
-    );
-    return Array.from(students).map((student) => {
-      const studentName = student.querySelector(
-        ".ag-cell:nth-child(6) > div > div"
-      )?.textContent;
-      const studentGithub = student.querySelector(
-        ".ag-cell:nth-child(7) > div > div"
-      )?.textContent;
-      const studentExit: boolean =
-        student.querySelector(".ag-cell:nth-child(8) > div > div")
-          ?.textContent !== "";
-      return { studentName, studentGithub, studentExit };
-    });
-  });
+      console.log(cohort);
 
-  console.log(students);
+      // attendre le retour de la requête
+      await delay(5000);
 
-  for (const student of students) {
-    await useCase.createStudent(
-      cohortId,
-      student.studentName ?? "",
-      student.studentGithub ?? "",
-      "",
-      student.studentExit
-    );
+      // Get all students
+      const students = await page.evaluate(async() => {
+        const students = await document.querySelectorAll(
+          ".ag-center-cols-container .ag-row"
+        );
+        if(students.length === 0) {
+          return [];
+        }
+        return Array.from(students).map((student) => {
+          const studentName = student.querySelector(
+            ".ag-cell:nth-child(6) > div > div"
+          )?.textContent;
+          const studentGithub = student.querySelector(
+            ".ag-cell:nth-child(7) > div > div"
+          )?.textContent;
+          const studentExit: boolean =
+            student.querySelector(".ag-cell:nth-child(8) > div > div")
+              ?.textContent !== "";
+          return { studentName, studentGithub, studentExit };
+        });
+      });
+      console.log(students);
+      for (const student of students) {
+        await useCase.createStudent(
+          cohortId,
+          student.studentName ?? "",
+          student.studentGithub ?? "",
+          "",
+          student.studentExit
+        );
+      }
+    }
   }
-
   await db.destroy();
-
   await browser.close();
 })();

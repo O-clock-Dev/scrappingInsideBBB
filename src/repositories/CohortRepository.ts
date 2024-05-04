@@ -10,5 +10,11 @@ export class CohortRepository {
       .values(cohort)
       .executeTakeFirstOrThrow()
   }
+
+  async findLikeName(name: string) {
+    return await this.db.selectFrom('cohort')
+      .where('name', 'like', `%${name}%`)
+      .execute()
+  }
 }
 

@@ -3,7 +3,7 @@ import { CohortRepository } from "../repositories/CohortRepository.js"
 import crypto from "crypto"
 import { db } from "../core/database.js"
 
-export default class UseCase {
+export default class CreateCohortsAndStudentsUseCase {
   private studentRepository: StudentRepository
   private cohortRepository: CohortRepository
 
@@ -28,7 +28,7 @@ export default class UseCase {
   }
 
   splitFullName(fullName: string): { firstName: string, lastName: string } | undefined {
-    const regexLastName = /^[A-Z0-9ÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ._-\s]+ /gm
+    const regexLastName = /^[A-Z0-9ÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ._-\s']+ /gm
     // split fullName into first and last name
     const lastName = regexLastName.exec(fullName)
     if(lastName?.length) {
@@ -40,7 +40,7 @@ export default class UseCase {
 
   async createCohort(name: string, start_date: string, end_date: string): Promise<string> {
     const cohortId = crypto.randomBytes(16).toString("hex")
-    const defaultDate = this.dateToMysqlFormat(new Date('1970-01-01'))
+    const defaultDate = this.dateToMysqlFormat(new Date('1990-01-01T00:00:01'))
     const cohort = await this.cohortRepository.create(
       {
         id: cohortId,
