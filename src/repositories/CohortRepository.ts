@@ -1,6 +1,6 @@
 import { Kysely } from 'kysely'
 import { db } from '../core/database'
-import { Database, NewCohort, Cohort } from '../core/types'
+import { Database, NewCohort, UpdateCohort, Cohort } from '../core/types'
 
 export class CohortRepository {
   constructor(private db: Kysely<Database>) {}
@@ -17,7 +17,7 @@ export class CohortRepository {
       .execute()
   }
 
-  async update(id: string, cohort: NewCohort): Promise<void> {
+  async update(id: string, cohort: UpdateCohort): Promise<void> {
     await this.db.updateTable('cohort')
       .set(cohort)
       .where('id', '=', id)
@@ -48,6 +48,14 @@ export class CohortRepository {
   async findLikeSlug(slug: string): Promise<Cohort | undefined> {
     return await this.db.selectFrom('cohort')
       .where('slug', 'like', `%${slug}%`)
+      .selectAll()
+      .executeTakeFirst()
+  }
+
+  async findLikeSlugAndStartDate(slug: string, startDate: Date): Promise<Cohort | undefined> {
+    return await this.db.selectFrom('cohort')
+      .where('slug', 'like', `%${slug}%`)
+      .where('start_date', '<=', startDate)
       .selectAll()
       .executeTakeFirst()
   }

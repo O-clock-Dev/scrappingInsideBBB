@@ -22,6 +22,7 @@ export interface CohortTable {
   end_date: ColumnType<Date, string | undefined, never>;
   email: string | null;
   created_at: ColumnType<Date, string | undefined, never>;
+  cockpit_id: string | null;
 }
 
 export type Cohort = Selectable<CohortTable>;

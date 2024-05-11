@@ -1,7 +1,5 @@
-import { StudentRepository } from "../repositories/StudentRepository"
 import { CohortRepository } from "../repositories/CohortRepository"
 import crypto from "crypto"
-import { db } from "../core/database"
 import { CourseRepository } from "../repositories/CourseRepository"
 
 interface Course {
