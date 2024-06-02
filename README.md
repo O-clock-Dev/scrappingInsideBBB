@@ -14,6 +14,14 @@ node dist/scripts/migrator.js
 
 Execution du script
 
+- Récupérer les données depuis inside
+
 ```sh
 node dist/inside.js
+```
+
+- Récupérer les données depuis slippers
+
+```sh
+node dist/slippers.js
 ```

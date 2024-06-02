@@ -160,7 +160,7 @@ function getLine(row: string[], csvData: CsvData[]): void {
 function readCsvFile(file: string, csvData: CsvData[]): Promise<void> {
   return new Promise((resolve, reject) => {
     fs.createReadStream(file)
-      .pipe(parse({ delimiter: ";", from_line: 1 }))
+      .pipe(parse({ delimiter: "£", from_line: 1 }))
       .on("data", async (row: string[]) => {
         await getLine(row, csvData);
       })
