@@ -13,6 +13,7 @@ export default class CreateCohortsAndStudentsUseCase {
   }
 
   dateToMysqlFormat(date: Date): string {
+    date.setTime(date.getTime() - date.getTimezoneOffset()*60000);
     return date.toISOString().slice(0, 19).replace("T", " ")
   }
 

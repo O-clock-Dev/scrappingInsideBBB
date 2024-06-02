@@ -27,6 +27,13 @@ export class StudentRepository {
       .execute()
   }
 
+  async findBySlug(slug: string): Promise<Student|undefined> {
+    return await this.db.selectFrom('student')
+      .where('slug', '=', slug)
+      .selectAll()
+      .executeTakeFirst()
+  }
+
   async findAll(): Promise<Student[]> {
     return await this.db.selectFrom('student')
       .selectAll()

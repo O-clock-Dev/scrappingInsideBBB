@@ -5,6 +5,10 @@ import SearchCohortAndAffectCohortId from "./usecase/cockpit/SearchCohortAndAffe
 import { CohortRepository } from "./repositories/CohortRepository.js"
 import { db } from "./core/database.js"
 
+// Ce script permet de se connecter à l'API
+// pour récupérer les id des promos et affecter l'id de la promo
+// provenant de l'API à la promo dans la DB
+
 const envVars = configDotenv().parsed
 if (!envVars) {
   throw new Error("No environment variables found")
