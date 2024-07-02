@@ -14,6 +14,12 @@ node dist/scripts/migrator.js
 
 Execution du script
 
+- Récupérer les données depuis le dashboard (BBB)
+
+```sh
+node dist/dashboard.js
+```
+
 - Récupérer les données depuis inside
 
 ```sh
